@@ -1,0 +1,13 @@
+---
+ftp:
+  host: 127.0.0.1
+  port: 21
+
+telegram:
+  token: MY_TOKEN
+
+users:
+  - name: alice
+    password: abc
+    salt: def
+    telegram_id: 123
