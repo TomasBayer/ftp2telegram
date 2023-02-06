@@ -1,35 +1,38 @@
 from cerberus import Validator
 
-
-def _build_schema():
-    string = dict(type='string')
-    integer = dict(type='integer', coerce=int)
-
-    port = dict(integer, min=1, max=65535)
-
-    sub_dict = lambda **d: dict(type='dict', schema=d)
-    sub_list = lambda d: dict(type='list', schema=d)
-    required = lambda schema: dict(schema, required=True)
-    with_default = lambda schema, default: dict(schema, default=default)
-
-    return dict(
-        ftp=with_default(sub_dict(
-            host=with_default(string, "127.0.0.1"),
-            port=with_default(port, "21")
-        ), {}),
-        telegram=required(sub_dict(
-            token=required(string)
-        )),
-        users=required(sub_list(sub_dict(
-            name=required(string),
-            telegram_id=required(integer),
-            password=required(string),
-            salt=required(string)
-        )))
-    )
-
-
-_SCHEMA = _build_schema()
+_SCHEMA = {
+    "ftp": {
+        "type": "dict",
+        "schema": {
+            "host": {"type": "string", "default": "127.0.0.1"},
+            "port": {
+                "type": "integer",
+                "coerce": int,
+                "min": 1,
+                "max": 65535,
+                "default": 21,
+            },
+        },
+        "default": {},
+    },
+    "telegram": {
+        "type": "dict",
+        "schema": {"token": {"type": "string", "required": True}},
+        "required": True,
+    },
+    "users": {
+        "type": "list",
+        "schema": {
+            "type": "dict",
+            "schema": {
+                "name": {"type": "string", "required": True},
+                "hashed_password": {"type": "string", "required": True},
+                "telegram_id": {"type": "integer", "coerce": int, "required": True},
+            },
+        },
+        "required": True,
+    },
+}
 
 
 class ConfigurationError(Exception):

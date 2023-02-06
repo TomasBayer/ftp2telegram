@@ -3,14 +3,10 @@ import logging
 import sys
 from pathlib import Path
 
-import argparse
-import logging
-import os
-import sys
 import yaml
 
-from ftp2telegram import FTP2Telegram
-
+from ftp2telegram.config import build_configuration
+from ftp2telegram.server import FTP2Telegram, User
 
 
 def build_argparser():
@@ -29,24 +25,29 @@ def run():
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, format='%(asctime)-15s %(levelname)-8s %(message)s')
 
-    def get_config_file():
-        if args.config_file:
-            return os.path.expanduser(args.config_file)
-        else:
-            for file in map(os.path.expanduser, ("~/.ftp2telegram.conf", "/etc/ftp2telegram.conf")):
-                if os.path.exists(file):
-                    return file
+    # Find config file
+    config_file = None
+    if args.config_file:
+        config_file = args.config_file.expanduser()
+    else:
+        for file in (Path("~/.ftp2telegram.conf").expanduser(), Path("/etc/ftp2telegram.conf")):
+            if file.exists():
+                config_file = file
+                break
 
-    config_file = get_config_file()
-
-    if not config_file:
+    if config_file is None:
         sys.exit("No configuration file found.")
 
     try:
-        with open(config_file) as config_file:
-            config = yaml.load(config_file)
+        with config_file.open() as fh:
+            config = build_configuration(yaml.safe_load(fh))
     except yaml.YAMLError:
-        sys.exit("Invalid YAML in configuration file: {}".format(config))
+        sys.exit(f"Invalid YAML in configuration file: {config}")
 
-    ftp = FTP2Telegram(config)
-    ftp.serve_forever()
+    ftp = FTP2Telegram(
+        telegram_bot_token=config['telegram']['token'],
+        users=[User(**user) for user in config['users']],
+        ftp_host=config['ftp']['host'],
+        ftp_port=config['ftp']['port'],
+    )
+    ftp.start()

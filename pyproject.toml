@@ -13,6 +13,7 @@ ftp2telegram = 'ftp2telegram.cli:run'
 python = "^3.9"
 cerberus = "^1.3.4"
 ftprelay = "^0.1"
+passlib = "^1.7.4"
 pyyaml = "^6.0"
 telepot = "^12.7"
 

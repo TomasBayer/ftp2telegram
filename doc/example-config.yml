@@ -8,6 +8,6 @@ telegram:
 
 users:
   - name: alice
-    password: abc
-    salt: def
+    hashed_password: |
+      $6$Zfgtsr/z3RLvOEKj$D2s4w51WiFiCgyrRD.gxEeMtXxMkgas1OGkSU2c.XMKDdaJ2iOt72yFXM1rvzb7YuoOJ3.i9lMn1qQ7oVEDEm1
     telegram_id: 123
