@@ -1,5 +1,8 @@
 # ftp2telegram
 
+[![PyPI - Version](https://img.shields.io/pypi/v/ftp2telegram)](https://pypi.org/project/ftp2telegram/)
+
+
 `ftp2telegram` is an FTP server that forwards all uploaded files to preconfigured [Telegram](https://telegram.org/)
 contacts.
 It was developed with the specific goal of retrofitting a Telegram interface into older devices or software that
